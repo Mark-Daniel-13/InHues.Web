@@ -1,0 +1,52 @@
+﻿@using Radzen.Blazor
+@inject IJSRuntime JS
+<CascadingValue Value="@(SelectedItem)" Name="SelectedItemId">
+    <div class="sidebar" style="@(StickySideBar ? stickyStyles : string.Empty)color:@TextColor;background-color:@BackgroundColor;@(IsExpanded.HasValue ? IsExpanded.Value ? "width: 160px;" : "width: 55px;" : string.Empty)">
+        <div class="sidebar-toggler rz-ripple" @onclick="OnMenuClickAsync">
+            <RadzenIcon Icon="menu"/>
+        </div>
+        <div class="sidebar-items-wrapper py-3">
+            @SidebarItems
+        </div>
+    </div>
+</CascadingValue>
+@code{
+    #region styling params
+    [Parameter]
+    public string BackgroundColor { get; set; } = "#39a3ae";
+    [Parameter]
+    public string TextColor { get; set; } = "#ffff";
+    #endregion
+
+    [Parameter]
+    public string SelectedItem { get; set; } = string.Empty;
+    [Parameter]
+    public bool? IsExpanded { get; set; }
+
+    [Parameter]
+    public RenderFragment SidebarItems{ get; set; }
+
+    [Parameter]
+    public bool StickySideBar { get; set; }
+
+    private string stickyStyles = "position:sticky; top: 1.5rem;";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        var sideBarWidth = await JS.InvokeAsync<int?>("getElementWidthByClass", "sidebar");
+        if (IsExpanded is null)
+        {
+            IsExpanded = sideBarWidth > 55;
+        }
+    }
+    private async Task OnMenuClickAsync()
+    {
+        var sideBarWidth = await JS.InvokeAsync<int?>("getElementWidthByClass", "sidebar");
+        var isExpanded = sideBarWidth > 55;
+
+        if (isExpanded && sideBarWidth < 145) IsExpanded = false; //prevent expand if the width is too small
+        IsExpanded = !isExpanded;
+    }
+
+}

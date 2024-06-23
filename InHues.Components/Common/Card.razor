@@ -1,0 +1,17 @@
+﻿<div @onclick="OnCardClick" class="rz-shadow-@ShadowVal  d-flex align-items-center @PaddingY @Class" style="height:@CardHeight; border-radius:0.6rem;cursor:pointer;" @onmouseover="()=>{ShadowVal = 7;}" @onmouseout="()=>{ShadowVal = 3;}">
+    @CardContent
+</div>
+@code{
+    [Parameter]
+    public string CardHeight { get; set; } = "5rem";
+    [Parameter]
+    public string Class { get; set; }
+    [Parameter]
+    public Action OnCardClick { get; set; } = () => { };
+    [Parameter]
+    public RenderFragment CardContent { get; set; }
+    [Parameter]
+    public string PaddingY { get; set; } = "py-3";
+    int ShadowVal = 3;
+    
+}

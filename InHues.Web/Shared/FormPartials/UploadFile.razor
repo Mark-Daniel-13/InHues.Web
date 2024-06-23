@@ -1,0 +1,25 @@
+﻿@using Mapster;
+<div style="height:100%">
+    <FileUpload IsMultiple="AllowMultiple" OnSubmit="OnSubmitHandler" />
+</div>
+@code {
+    [Parameter]
+    public bool AllowMultiple { get; set; }
+    [Parameter]
+    public Action OnCancelClick { get; set; } = () => { };
+    [Parameter]
+    public EventCallback<List<FileResponse>> OnSubmitEvent { get; set; }
+
+    async Task OnSubmitHandler(List<FileResponse> result)
+    {
+        if (result is null)
+        {
+            OnCancelClick.Invoke();
+        }
+        else
+        {
+            await OnSubmitEvent.InvokeAsync(result);
+        }
+    }
+
+}

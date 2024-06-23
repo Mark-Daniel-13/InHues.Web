@@ -1,0 +1,133 @@
+﻿@using InHues.Domain.DTO.V1.Identity.Request;
+<div>
+    @if (Payload is null)
+    {
+        <RadzenCard>
+            <RadzenDataGrid @ref="DGrid.grid" Data="@DGrid.DataList.Values" Count="@DGrid.DataList.Count" LoadData="@LoadData" TItem="UserResponseDto" AllowVirtualization="true" Style="height:400px" RowClick="ViewDetails">
+                <Columns>
+                    <RadzenDataGridColumn TItem="UserResponseDto" Property="UserName" Title="Username" />
+                    <RadzenDataGridColumn TItem="UserResponseDto" Property="Email" Title="Email" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenCard>
+    }else{
+        <RadzenTemplateForm TItem="UserResponseDto" Data="Payload" Submit="OnSubmitHandler">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.H6">Selected : @Payload?.UserName</RadzenText>
+                <RadzenDropDown TValue="string" Placeholder="Select Role" @bind-Value=@SelectedRole Data=@Roles Name="role" TextProperty="Name" ValueProperty="Name" Style="width: 100%;" />
+                <RadzenRequiredValidator Component="role" Text="Role is required" Popup=true Style="position: relative" />
+
+                <RadzenStack JustifyContent="JustifyContent.End" class="pt-3" Orientation="Orientation.Horizontal">
+                    <RadzenButton Variant="Variant.Flat" IsBusy="@IsBusy" ButtonType="ButtonType.Submit" Text="Assign" />
+                    <RadzenButton Variant="Variant.Flat"  IsBusy="@IsBusy" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Click="CancelSelectedUser" />
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenTemplateForm>
+    }
+</div>
+@code {
+    [Parameter]
+    public UserResponseDto? Payload { get; set; }
+    [Parameter]
+    public string TenantId{ get; set; }
+    [Parameter]
+    public Action OnCancelClick { get; set; } = () => { };
+    [Parameter]
+    public EventCallback<UserResponseDto> OnSubmitEvent { get; set; }
+
+    DataGrid<UserResponseDto> DGrid = new();
+    bool IsInitAdd = false;
+    List<IdentityRoleDto> Roles = new();
+    string SelectedRole;
+
+    bool IsBusy = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        IsInitAdd = Payload is null;
+        Task.Run(() => { 
+            FetchUsers(0, 5);
+            LoadRoles();
+        });
+    }
+    async Task LoadData(LoadDataArgs args)
+    {
+
+        if (Bridge is null) return;
+        await FetchUsers(args.Skip ?? 0, args.Top ?? 0);
+    }
+    async Task FetchUsers(int skip, int top)
+    {
+        var requestParams = new OdataRequestBase()
+        {
+            Count = true,
+            Skip = skip,
+            Top = top,
+            OrderBy = "id desc",
+            SearchString = $"tenantId eq null"
+            //SearchString = $"profile ne null"
+            //Select = "id,name"
+        };
+
+        var query = await Bridge.GetJsonAsync<OdataResponse<UserResponseDto>>(ApiRoutes.Users.GetAll, requestParams);
+        if (!query.IsSuccess) return;
+
+        DGrid.DataList = query.Response ?? new();
+    }
+    async Task LoadRoles()
+    {
+        var query = await Bridge.GetJsonAsync<List<IdentityRoleDto>>(ApiRoutes.Identity.FetchRoles, new());
+        if (!query.IsSuccess) return;
+
+        Roles = query.Response;
+    }
+    async Task OnSubmitHandler(UserResponseDto item)
+    {
+        if (Bridge is null || string.IsNullOrEmpty(SelectedRole) || Payload is null || IsBusy) return;
+
+        IsBusy = true;
+        var request = new AddRoleToUserRequest() { UserId = Payload.Id.ToString(), Role = SelectedRole };
+        var query = await Bridge.CommandJsonAsync<OdataSingleResponse<bool>, AddRoleToUserRequest>(ApiRoutes.Identity.AddRoleToUser, request, RequestType.POST);
+        IsBusy = false;
+
+        if (!query.IsSuccess)
+        {
+            var error = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = $"Assigning Role to User and Tenant Failed",
+                Detail = "Please try again.",
+                Duration = 1500
+            };
+
+            NotifService.Notify(error);
+            return;
+        };
+
+        NotifService.Notify(new()
+        {
+
+            Severity = NotificationSeverity.Success,
+            Summary = $"Successfully Assigned Role to User",
+            Duration = 1500
+        });
+
+        await OnSubmitEvent.InvokeAsync(item);
+    }
+    void ViewDetails(DataGridRowMouseEventArgs<UserResponseDto> item)
+    {
+        Payload = item.Data;
+    }
+    void CancelSelectedUser()
+    {
+        if (IsInitAdd)
+        {
+            Payload = null;
+        }
+        else
+        {
+            OnCancelClick.Invoke();
+        }
+    }
+}

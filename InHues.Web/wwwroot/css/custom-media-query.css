@@ -1,0 +1,17 @@
+﻿/*xs <576px*/
+/*s >=576px*/
+/*m >=768px*/
+/*l >=992px*/
+/*xl >=1200px*/
+/*xxl >=1400px*/
+
+
+/*Moved stop component css*/
+/*@media (max-width: 767px ) {
+    .sidebarItem-menu-right {
+        width: 0px !important;
+    }
+    .sidebar {
+        width: 50px;
+    }
+}*/

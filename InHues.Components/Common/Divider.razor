@@ -1,0 +1,12 @@
+﻿<div id="divider" style="height: @Height; margin: @BufferY @BufferX; @CustomStyle "></div>
+
+@code{
+    [Parameter]
+    public string Height { get; set; } = "3px";
+    [Parameter]
+    public string BufferY { get; set; } = "1rem";
+    [Parameter]
+    public string BufferX { get; set; } = "0";
+    [Parameter]
+    public string? CustomStyle { get; set; }
+}

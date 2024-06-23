@@ -1,0 +1,68 @@
+﻿.sidebar {
+        border-radius: .6px 1.4rem 1.4rem .6px;
+        margin: .6rem 0px 0px 0px;
+        width: 160px;
+        transition: width 0.8s linear;
+        container-type: inline-size;
+        height:fit-content;
+        min-width: 55px;
+    }
+@keyframes togglerRoll-left {
+    0% {
+        left: 115px;
+    }
+
+    15% {
+        transform: rotate(-30deg);
+    }
+
+    100% {
+        left: 8px;
+    }
+}
+@keyframes togglerRoll-right {
+    0% {
+        left: 8px;
+    }
+
+    15% {
+        transform: rotate(30deg);
+    }
+
+    100% {
+        left: 115px;
+    }
+}
+
+.sidebar-toggler {
+    color: inherit;
+    position: sticky;
+    left: 160px;
+    margin-top: 0.6rem;
+    width: fit-content;
+    /*transition: left 0.8s linear;*/
+
+    padding: 0.3rem 0.3rem 0 0.3rem;
+    border-radius: 100%;
+    cursor: pointer;
+    animation-name: togglerRoll-right;
+    animation-duration: 0.85s;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+
+}
+
+@media (max-width: 735px) {
+    .sidebar {
+        width: 55px !important;
+    }
+    .sidebar-toggler {
+        display: none;
+        left: 8px;
+        padding: 0.3rem 0.3rem 0 0.5rem;
+        animation-name: togglerRoll-left;
+        animation-duration: 0.7s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+}

@@ -1,0 +1,13 @@
+﻿.sidebar-menu {
+    border-radius: 0.7rem;
+}
+.sidebarItem-menu-right {
+    overflow: hidden;
+    width: 100%;
+    transition: width 1s linear;
+}
+@media (max-width: 767px ) {
+    .sidebarItem-menu-right {
+        width: 0px !important;
+    }
+}

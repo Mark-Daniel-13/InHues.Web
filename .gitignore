@@ -1,0 +1,9 @@
+**/.vs
+/InHues.Web/InHues.Web.csproj.user
+/InHues.Web/bin/*
+/InHues.Web/obj/*
+/InHues.Web/Properties/*
+/InHues.Components/bin/*
+/InHues.Components/obj/*
+/InHues.StateMngmt/bin/*
+/InHues.StateMngmt/obj/*

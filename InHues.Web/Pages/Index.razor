@@ -1,0 +1,103 @@
+﻿@page "/"
+@using InHues.Components.ViewModels.Auth;
+@using InHues.Domain.DTO.V1.Identity.Response;
+@using InHues.StateMngmt.Storage;
+@using InHues.Web.Implementation;
+
+<PageTitle>Login</PageTitle>
+
+
+<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Style="height:100vh;" class="front-page">
+    <div class="rz-shadow-2 px-2">
+        <div class="logo-container">
+            @* <img src="/img/dermtrics_logo.png" class="img-host-logo"> *@
+            Insert Logo Here
+        </div>
+        
+        <p class="dt-12 text-center"><strong>Log in to InHues</strong></p>
+        <RadzenTemplateForm TItem="Login" Data="@LoginInput">
+            <RadzenStack Class="rz-p-4 rz-p-md-4">
+
+                <RadzenFormField Text="Email" Variant="Variant.Outlined" Style="width: 100%;">
+                    <ChildContent>
+                        <RadzenTextBox Placeholder="Email" Name="email" @bind-Value="LoginInput.Email" />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="email" Text="Enter Email" Popup="true" Style="position: relative" />
+                    </Helper>
+                </RadzenFormField>
+
+
+                <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="width: 100%;">
+                    <ChildContent>
+                        <RadzenPassword Placeholder="Password" Name="password" @bind-Value="LoginInput.Password" />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="password" Text="Enter password" Popup="true" Style="position: relative" />
+                    </Helper>
+                </RadzenFormField>
+
+                <p class="dt-09 mb-0 text-primary" style="cursor:pointer" @onclick="ResetPass">Forgot Password?</p>
+                <RadzenButton Variant="Variant.Flat" class="primary-bg" ButtonType="ButtonType.Submit" Text="@(IsLoggingIn ? "Logging In.." : "Log In")" Click="OnLoginAsync"></RadzenButton>
+                <p class="dt-10 text-center">Don't have an account? <span class="text-primary" style="cursor:pointer" @onclick="OnRegister">Sign Up</span></p>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </div>
+</RadzenStack>
+
+@code{
+    [Inject] AuthenticationStateProvider? AuthProvider { get; set; }
+    [Inject] private IAuthService? _authService { get; set; }
+    [Inject] private IStorageMngmt? _storageMngmt { get; set; }
+    [Inject] private AppKeys _keys { get; set; }
+    private Login LoginInput = new();
+    private bool IsLoggingIn = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await ValidateAuth();
+    }
+    private async Task OnLoginAsync()
+    {
+        if (_authService is null || IsLoggingIn) return;
+        IsLoggingIn = true;
+        var verified = await _authService.LoginAsync(LoginInput.Email,LoginInput.Password);
+        IsLoggingIn = false;
+        if (!verified) return;
+        await ValidateAuth();
+    }
+    private void OnRegister()
+    {
+        NavManager.NavigateTo("/Register");
+    }
+    private async Task ValidateAuth()
+    {
+        if (AuthProvider is null || _storageMngmt is null) return;
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        if (authState.User?.Identity is null || !authState.User.Identity.IsAuthenticated) return;
+
+        var roles = authState.User.FindAll(x => x.Type == "role");
+
+
+        if (!roles.Any(x => x.Value == "Administrator"))
+        {
+            UserResponseDto? currentUser = AppState.CurrentUser is null ? null : (UserResponseDto)AppState.CurrentUser;
+            var hasProfile = authState.User.FindFirst("profileId")?.Value ?? currentUser?.Id.ToString();
+            if (hasProfile is null || hasProfile == "0") { NavManager.NavigateTo("/UserProfile"); return; }
+
+            var isEnabled = authState.User.FindFirst("isEnabled")?.Value;
+            if (isEnabled is null) await _authService.LogoutAsync();
+
+            if (!Convert.ToBoolean(isEnabled)) { NavManager.NavigateTo("/Account/Inactive"); return; }
+        }
+
+        var tenantName = authState.User.FindFirst(x => x.Type == "tenantName");
+        string? trimed = tenantName?.Value?.Replace(" ", string.Empty);
+        string redirectURL = roles.Any(x => x.Value == "Administrator") ? "/Admin/Dashboard" : $"/{trimed}/Dashboard";
+        if (!string.IsNullOrEmpty(await _storageMngmt.GetValueAsync(_keys.AccessToken))) NavManager.NavigateTo(redirectURL);
+    }
+    void ResetPass()
+    {
+        NavManager.NavigateTo("/PasswodReset");
+    }
+}

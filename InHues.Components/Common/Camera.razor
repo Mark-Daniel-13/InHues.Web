@@ -1,0 +1,118 @@
+﻿@using Radzen.Blazor
+@using Radzen;
+<div id="camera-panel">
+
+    @if (havePermission) { 
+        if (string.IsNullOrEmpty(img))
+        {
+            <video id="videoPreview" autoplay style="width: inherit;"></video>
+        }
+        else
+        {
+            <img src="@img" style="width: inherit;" />
+        }
+
+
+
+        <canvas id="canvasPreview" style="display: none;"></canvas>
+        <div id="camera-panel-controls">
+            @if (string.IsNullOrEmpty(img))
+            {
+                <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" Click="CaptureImage">Capture</RadzenButton>
+            }
+            else
+            {
+                <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" Click="Retry">Retry</RadzenButton>
+                <RadzenButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" ButtonType="ButtonType.Button" Click="SubmitHandler">Save</RadzenButton>
+            }
+        </div>
+    }
+    else
+    {
+        <span>Please enable browser permission to use the camera. Change it to allow use camera for this feature to work.</span>
+        <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" Click="CheckPermission">Check Permission</RadzenButton>
+    }
+</div>
+
+
+@code{
+    [Inject] IJSRuntime jSRuntime { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSubmit { get; set; }
+    string img;
+    bool startCamera = false;
+    bool havePermission = true;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || startCamera)
+        {
+            await StartCamera();
+            startCamera = false;
+        }
+    }
+
+    async Task Retry()
+    {
+        img = null;
+        StateHasChanged();
+        startCamera = true;
+    }
+    async Task CaptureImage()
+    {
+        if (jSRuntime is null) return;
+        try
+        {
+            img = await jSRuntime.InvokeAsync<string>("DTCamera.CaptureImage", "videoPreview", "canvasPreview");
+            await StopCamera();
+            havePermission = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors
+        }
+    }
+
+    async Task StopCamera()
+    {
+        if (jSRuntime is null) return;
+        try
+        {
+            await jSRuntime.InvokeVoidAsync("DTCamera.StopCamera");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors
+        }
+    }
+
+    async Task StartCamera()
+    {
+        if (jSRuntime is null) return;
+        try
+        {
+            havePermission = await jSRuntime.InvokeAsync<bool>("DTCamera.CheckCameraPermission");
+            if (!havePermission) { StateHasChanged(); return; };
+
+            await jSRuntime.InvokeVoidAsync("DTCamera.StartCamera", "videoPreview");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors
+        }
+    }
+    async Task CheckPermission()
+    {
+        if (jSRuntime is null) return;
+        havePermission = await jSRuntime.InvokeAsync<bool>("DTCamera.PromptCameraPermission");
+        startCamera = true;
+        StateHasChanged();
+    }
+
+    async Task SubmitHandler()
+    {
+        await OnSubmit.InvokeAsync(img);
+    }
+}

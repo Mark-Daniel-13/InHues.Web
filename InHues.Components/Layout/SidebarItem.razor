@@ -1,0 +1,63 @@
+﻿@using Radzen.Blazor
+@using Radzen;
+<div class="sidebar-item p-2" style="color:@TextColor">
+    <div class="sidebar-menu rz-ripple px-2 @IsActive" @onclick="SubItems is null ? OnItemClick : ExpandToggle" style="padding-top:0.4rem;padding-bottom:0.4rem;">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+            <RadzenIcon Icon="@Icon" Style="color:inherit;margin-right: 0.8rem" />
+            
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.6rem" class="sidebarItem-menu-right">
+                <RadzenText Text="@Text" TagName="TagName.P" TextAlign="TextAlign.End" class="mb-0" Style="color:inherit;font-size:.8rem"/>
+                @if (SubItems is not null)
+                {
+                    <RadzenIcon Icon="@ExpandIcon" Style="color:inherit" />
+                }
+            </RadzenStack>
+        </RadzenStack>
+    </div>
+    @if (SubItems is not null)
+    {
+        <div class="sidebar-wrapper" style="display: @(IsExpanded ? "block" : "none"); color:inherit">
+            @SubItems
+        </div>
+    }
+</div>
+@code{
+    [CascadingParameter(Name = "SelectedItemId")]
+    protected string? SelectedItemId { get; set; }
+    [Inject] NavigationManager? NavManager { get; set; }
+
+    #region styling params
+    [Parameter]
+    public string TextColor { get; set; } = "#ffff";
+    #endregion
+    [Parameter]
+    public int ModuleIndex { get; set; }
+    [Parameter]
+    public string Icon { get; set; } = string.Empty;
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment? SubItems { get; set; }
+    [Parameter]
+    public Action OnItemClick { get; set; } = () => { };
+
+    private string IsActive => (!string.IsNullOrEmpty(SelectedItemId) && (SelectedItemId == Text.ToLower() )) ? "sidebar-menu-active" : string.Empty;
+    private bool IsExpanded { get; set; }
+    private string ExpandIcon => IsExpanded ? "expand_less" : "expand_more";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (NavManager is null) return;
+        var url = NavManager.Uri;
+        var module = url.Replace(NavManager.BaseUri, string.Empty).Split('/')[ModuleIndex];
+        if (module == Name) OnItemClick.Invoke();
+    }
+    private void ExpandToggle()
+    {
+        IsExpanded = !IsExpanded;
+    }
+
+}

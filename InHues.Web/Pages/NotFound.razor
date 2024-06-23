@@ -1,0 +1,16 @@
+﻿@page "/NotFound"
+<PageTitle>Page Not Found</PageTitle>
+
+<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Style="height:100vh" class="front-page">
+    <div class="rz-shadow-2 px-2">
+        <div class="logo-container">
+            <img src="/img/dermtrics_logo.png" class="img-host-logo">
+        </div>
+
+        <p class="dt-12 text-center mb-0"><strong>Ooops.. Are you lost?</strong></p>
+        <p class="dt-08 text-center">There's nothing to see here...</p>
+        <div class="rz-p-4 rz-p-md-4 w-100">
+            <RadzenButton Variant="Variant.Flat" class="primary-bg w-100" ButtonType="ButtonType.Button" Click="@(()=>{NavManager.NavigateTo("/");})" Text="Go BACK"></RadzenButton>
+        </div>
+    </div>
+</RadzenStack>

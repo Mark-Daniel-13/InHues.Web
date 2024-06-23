@@ -1,0 +1,27 @@
+﻿<div id="page-container" class="container-fluid">
+    @if (!string.IsNullOrEmpty(BackPath))
+    {
+        <Radzen.Blazor.RadzenIcon Icon="arrow_back" Style="position:absolute; cursor:pointer; padding-bottom: 1rem" @onclick="Back" />
+    }
+    @*<p id="page-header-text">@Title</p>*@
+    <div class="pt-4">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Inject] NavigationManager? NavManager { get; set; }
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string BackPath { get; set; } = string.Empty;
+    void Back()
+    {
+        if (NavManager is null) return;
+
+        NavManager.NavigateTo(BackPath);
+    }
+}

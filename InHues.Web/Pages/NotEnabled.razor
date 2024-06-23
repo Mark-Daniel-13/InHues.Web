@@ -1,0 +1,44 @@
+﻿@page "/Account/Inactive"
+
+<PageTitle>Not Active</PageTitle>
+
+<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Style="height:100vh" class="front-page">
+    <div class="rz-shadow-2 px-2">
+        <div class="logo-container">
+            <img src="/img/dermtrics_logo.png" class="img-host-logo">
+        </div>
+
+        <p class="dt-12 text-center mb-0"><strong>Please wait for account activation.</strong></p>
+        <p class="dt-08 text-center">Your account is not yet activated, please contact dermtrics at +639950993607 or dermtrics@@gmail.com to activate your account.</p>
+        <div class="rz-p-4 rz-p-md-4 w-100">
+            <RadzenButton Variant="Variant.Flat" class="primary-bg w-100" ButtonType="ButtonType.Button" Click="LogOut" Text="BACK TO LOGIN"></RadzenButton>
+        </div>
+    </div>
+</RadzenStack>
+@code{
+    [Inject] IAuthService? _authService { get; set; }
+    [Inject] AuthenticationStateProvider? AuthProvider { get; set; }
+    private async Task LogOut()
+    {
+        if (_authService is null) return;
+        await _authService.LogoutAsync();
+        NavManager.NavigateTo("/");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (NavManager is null || AuthProvider is null) return;
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var roles = authState.User.FindAll(x => x.Type == "role");
+
+        if (roles.Any(x => x.Value == "Administrator"))
+        {
+            NavManager.NavigateTo("/Admin/Dashboard");
+        }
+
+        var isEnabled = authState.User.FindFirst("isEnabled")?.Value;
+        if (isEnabled is null) await LogOut();
+
+        if (Convert.ToBoolean(isEnabled) && roles.Any()) NavManager.NavigateTo("/Dashboard");
+    }
+}

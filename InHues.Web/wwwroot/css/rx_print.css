@@ -1,0 +1,102 @@
+﻿.rx-wrapper, .rx-wrapper-footer {
+    padding-bottom: 0px !important;
+    padding-top: 6px !important;
+    overflow: hidden;
+
+    /*border: 3px solid green;*/
+}
+    .rx-wrapper p {
+        margin-bottom: 0!important;
+        
+        font-size: 0.6em;
+    }
+.rx-col-l .pb-4, .rx-col-r .pb-4 {
+    padding-bottom: 0.5em !important;
+}
+.rx-header > .doctor {
+    font-size: 1.2em;
+    font-weight: 800;
+}
+.rx-clinic-info span {
+    font-size: 0.8em;
+}
+.rx-header > .sub-title {
+    font-size: 1em;
+    font-weight: 700;
+}
+
+.rx-clinic-info .address {
+    font-weight: 500;
+}
+
+.rx-clinic-info .name {
+    font-weight: 600;
+}
+
+.rx-clinic-info .hours-label {
+    font-weight: 600;
+}
+
+.rx-clinic-info .hours-value {
+    font-weight: 500;
+}
+
+.rx-patient-info .rx-col-l {
+    width: 65%;
+}
+
+.rx-patient-info .rx-col-r {
+    width: 35%;
+}
+
+.rx-footer-doctor-name {
+    font-weight: 500;
+    font-size: 0.6em;
+}
+
+.rx-footer-l {
+    width: 50%;
+}
+
+.rx-footer-r {
+    width: 50%;
+}
+
+.rx-footer-l .rx-pi-label {
+    width: 100%;
+}
+
+.rx-pi-label {
+    margin-right: 0.4em;
+    width: 30%;
+}
+
+.rx-pi-val {
+    width: 70%;
+    border-bottom: 1px solid black;
+}
+
+.rx-divider-sm {
+    margin: 0.6em 0;
+    border-radius: 0px;
+    border:0.2px solid black;
+}
+
+.rx-divider-lg {
+    margin: 0.6em 0;
+    border-radius: 0px;
+    border: 2px solid black;
+}
+
+.canvas-wrapper {
+    position: relative;
+    margin-bottom:10px !important;
+}
+
+    .canvas-wrapper .rx-logo {
+        position: absolute;
+        height: 40px;
+    }
+    .canvas-wrapper .wrapper, .canvas-img {
+        padding-top: 20px;
+    }

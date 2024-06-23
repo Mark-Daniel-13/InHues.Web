@@ -1,0 +1,267 @@
+﻿:root {
+    --app-primary: #004AAD;
+    --app-secondary: #4EAEE6;
+    --app-smoke: rgba(78, 174, 230,0.2);
+    --app-smoke-light: rgba(78, 174, 230,0.1);
+    --app-border-color: #daf0f2;
+    --app-complimentary: #F4D287;
+}
+
+.rz-text-body1 {
+    font-size: .9em;
+    font-weight: 500;
+}
+.rz-autocomplete > input {
+    font-size: inherit;
+}
+.rz-tabview-title {
+    font-size: inherit;
+}
+.rz-tabview-nav > li > a {
+    font-size: inherit;
+}
+ul.rz-profile-menu .rz-navigation-item-icon-children {
+    color: black;
+}
+ul.rz-profile-menu {
+    background:none;
+    padding:0;
+}
+
+ul.rz-datalist-data {
+    padding:0;
+}
+ul.rz-datalist-data > li {
+    padding: 0;
+    margin:0;
+    height:fit-content;
+    width:fit-content;
+    border-radius:0.6rem;
+    cursor:pointer;
+}
+/*CUSTOM FONTS*/
+.dt-06 {
+    font-size: 0.6em !important;
+}
+.dt-07 {
+    font-size: 0.7em !important;
+}
+.dt-08 {
+    font-size: 0.8em !important;
+}
+.dt-09 {
+    font-size: 0.9em !important;
+}
+.dt-10 {
+    font-size: 1em !important;
+}
+.dt-11 {
+    font-size: 1.1em !important;
+}
+.dt-12 {
+    font-size: 1.2em !important;
+}
+
+.dt-13 {
+    font-size: 1.3em !important;
+}
+.dt-14 {
+    font-size: 1.4em !important;
+}
+.dt-15 {
+    font-size: 1.5em !important;
+}
+.dt-16 {
+    font-size: 1.6em !important;
+}
+.dt-17 {
+    font-size: 1.7em !important;
+}
+.dt-18 {
+    font-size: 1.8em !important;
+}
+.dt-19 {
+    font-size: 1.9em !important;
+}
+.dt-20 {
+    font-size: 2em !important;
+}
+
+/*CUSTOM FONTS - REM*/
+.dtr-06 {
+    font-size: 0.6rem !important;
+}
+
+.dtr-08 {
+    font-size: 0.8rem !important;
+}
+
+.dtr-09 {
+    font-size: 0.9rem !important;
+}
+
+.dtr-10 {
+    font-size: 1rem !important;
+}
+
+.dtr-12 {
+    font-size: 1.2rem !important;
+}
+
+.dtr-14 {
+    font-size: 1.4rem !important;
+}
+
+
+.align-tabs-center > ul {
+    justify-content:center;
+    align-items:center;
+}
+.custom-tabs-style > .rz-tabview-panels > .rz-tabview-panel {
+    padding-left:0px;
+    padding-right:0px;
+}
+
+/*.tabItem-responsive > a > .rz-tabview-title {
+    width: 100%;
+    overflow:hidden;
+}*/
+
+.custom-checkboxlist-horizontal > .rz-checkbox {
+    margin-top:0.6em;
+    margin-bottom:0.6em;
+}
+
+.rz-fileupload-buttonbar {
+    /*background-color: red;*/
+    padding:0;
+}
+    .rz-fileupload-buttonbar > .rz-fileupload-choose, .btn-capture-cam {
+        background-color: var(--app-primary) !important;
+        color: #ffff !important;
+        border-radius: 3rem;
+        padding: 2em;
+        width: fit-content;
+        min-width:183px;
+    }
+    .btn-capture-cam {
+        padding: 0em 2em;
+        width: fit-content;
+   /*     height:64px;
+        width:183px;*/
+    }
+
+.image-upload-content {
+   height:20em;
+   max-height:750px;
+   width: 100%;
+   object-fit:contain;
+}
+
+.dt-bg-primary{
+    background-color: var(--app-primary) !important;
+}
+
+@media (max-width: 735px) {
+    .tabItem-responsive > a {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.8em !important;
+        overflow: hidden;
+        text-align:center;
+    }
+
+      .tabItem-responsive > a > .rz-tabview-title {
+       line-height:2.5em;
+    }
+
+  /*  .tabItem-responsive > a > .rz-tabview-title {
+        width: 0 !important;
+        transition: width 0.8s linear;
+    }*/
+}
+
+.rz-grid-table > thead > tr > th {
+    background-color: var(--app-secondary) !important;
+}
+
+.header {
+    background-color: var(--app-primary) !important;
+}
+
+.rz-button.rz-primary {
+    background-color: var(--app-primary) !important;
+    color: white !important;
+}
+.rz-button.rz-light {
+    background-color: var(--app-complimentary) !important;
+    color: black !important;
+}
+
+.rz-checkbox-list-horizontal .rz-checkbox {
+    display: flex !important;
+    padding-bottom: 0.5rem;
+}
+
+.rz-growl-message {
+    font-size:0.8em !important;
+}
+
+.rz-sidebar-toggle:hover, .rz-sidebar-toggle:focus, .rz-sidebar-toggle:active {
+    background: var(--app-primary) !important;
+}
+
+.rz-badge-primary.rz-shade-light {
+    background-color: var(--app-primary) !important;
+}
+
+.rz-badge-success.rz-shade-light {
+    background-color: var(--app-secondary) !important;
+}
+
+.rz-panel-menu .rz-navigation-item:hover {
+    background-color: var(--app-secondary) !important;
+}
+
+.rz-panel-menu .rz-navigation-item-link:active, .rz-panel-menu .rz-navigation-item-link:focus {
+    background-color: var(--app-primary) !important;
+
+}
+.rz-navigation-item-wrapper:hover {
+    color: white !important;
+}
+.rz-navigation-item-icon {
+    color:inherit !important;
+}
+.rz-data-grid .rz-grid-table thead th .rz-column-title {
+    font-size: 1rem;
+    color: white
+}
+.session-detail-buttons {
+    width: 40%;
+}
+@media (max-width: 735px) {
+    .session-detail-buttons {
+        width:100% !important;   
+    }
+}
+/*@media only screen and (min-width: 768px) {
+    #services-content .rz-grid-table thead th .rz-column-title {
+        font-size: 1.6em;
+    }
+}
+*/
+
+.two-legend-chart-series .rz-series-0 {
+    fill: var(--app-primary) !important;
+    stroke: var(--app-primary) !important;
+}
+
+.two-legend-chart-series .rz-series-1 {
+    fill: var(--app-secondary) !important;
+    stroke: var(--app-secondary) !important;
+}
+#custom-selectbar .rz-state-active {
+    color: #40d256 !important;
+    background-color: rgba(64, 210, 86,0.12) !important;
+}

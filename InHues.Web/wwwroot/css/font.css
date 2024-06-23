@@ -1,0 +1,63 @@
+﻿@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-ExtraBoldItalic.ttf) format('truetype');
+    font-weight: bolder;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-ExtraBold.ttf) format('truetype');
+    font-weight: bolder;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-BoldItalic.ttf) format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-Bold.ttf) format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-Italic.ttf) format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk";
+    src: url(fonts/SchibstedGrotesk-Regular.ttf) format('truetype');
+}
+
+
+
+@font-face {
+    font-family: "SchibstedGrotesk-Black";
+    src: url(fonts/SchibstedGrotesk-BlackItalic.ttf)format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk-Black";
+    src: url(fonts/SchibstedGrotesk-Black.ttf) format('truetype');
+}
+
+
+@font-face {
+    font-family: "SchibstedGrotesk-SemiBold";
+    src: url(fonts/SchibstedGrotesk-SemiBoldItalic.ttf) format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "SchibstedGrotesk-SemiBold";
+    src: url(fonts/SchibstedGrotesk-SemiBold.ttf) format('truetype');
+}
+
+

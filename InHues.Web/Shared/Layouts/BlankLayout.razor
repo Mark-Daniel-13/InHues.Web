@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+<RadzenNotification />
+<RadzenDialog />
+<RadzenTooltip/>
+@if (!AppState.IsNewInstance)
+{
+    @Body
+}
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppState.IsNewInstance)
+        {
+            await AppState.RestoryStateAsync();
+        }
+        await base.OnInitializedAsync();
+        NavManager.LocationChanged += HandleLocationChanged;
+        StateHasChanged();
+    }
+
+    void HandleLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        string currentLocation = args.Location;
+
+        // Access the previousLocation variable to get the previous location
+        string previousPath = !string.IsNullOrEmpty(AppState.PrevURL) ? new Uri(AppState.PrevURL).PathAndQuery : string.Empty; ;
+        string currentPath = new Uri(currentLocation).PathAndQuery;
+
+        if (previousPath == currentPath) return;
+
+
+        // Update the previousLocation with the current location for the next event
+        AppState.SetPrevURL(currentLocation);
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= HandleLocationChanged;
+    }
+}

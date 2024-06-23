@@ -1,0 +1,27 @@
+﻿@using Radzen.Blazor
+<div class="grouped-panel @Class" style="border:1px solid @(BorderColor); @Style">
+    <div class="panel-title" style="@TitleStyle">
+        <RadzenText TextStyle="TextStyle.Subtitle2" Text="@Title" class="dt-c-primary" />
+    </div>
+    @if (ShowTitleDivider)
+    {
+        <Divider />
+    }
+    @ChildContent
+</div>
+@code{
+    [Parameter]
+    public string? BorderColor { get; set; } = "#39a3ae";
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public string? Class { get; set; }
+    [Parameter]
+    public string? Style { get; set; }
+    [Parameter]
+    public string? TitleStyle { get; set; }
+    [Parameter]
+    public bool ShowTitleDivider { get; set; }
+}

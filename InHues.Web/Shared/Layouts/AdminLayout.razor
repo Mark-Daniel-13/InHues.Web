@@ -1,0 +1,131 @@
+﻿@using InHues.Components.Layout
+@using InHues.Components.ViewModels;
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@layout BlankLayout
+
+<div class="d-flex justify-content-between p-2 mb-1">
+    <div class="d-flex align-items-center pe-3">
+        <img src="/img/dermtrics_logo.png" class="img-host-logo m-1">
+    </div>
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0" JustifyContent="JustifyContent.End">
+        <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End" JustifyContent="JustifyContent.Center" Gap="0">
+            <RadzenText class="rz-text-capitalize mb-0" Style="font-weight:bold" TextStyle="TextStyle.H6">Admin</RadzenText>
+        </RadzenStack>
+
+        <RadzenProfileMenu Style="display:flex;align-items:center">
+            <Template>
+                <img src="/img/blank_user.png" class="img-round m-2" style="height:2.6rem">
+            </Template>
+            <ChildContent>
+                <div @onclick="LogOut">
+                    <RadzenProfileMenuItem Text="Logout" Icon="logout"></RadzenProfileMenuItem>
+                </div>
+            </ChildContent>
+        </RadzenProfileMenu>
+    </RadzenStack>
+</div>
+@*<section>
+    <div id="serviceAvail-shortcut">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
+            <RadzenIcon Icon="add" Style="color:inherit;margin-right: 0.8rem" />
+
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.6rem" class="sidebarItem-menu-right">
+                <RadzenText Text="Avail Service" TagName="TagName.P" TextAlign="TextAlign.End" class="mb-0" Style="color:inherit;font-size:.8rem" />
+            </RadzenStack>
+        </RadzenStack>
+    </div>
+</section>*@
+<section id="main">
+    <RadzenLayout>
+        <RadzenHeader>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                <RadzenLabel Text="@headerName" />
+            </RadzenStack>
+        </RadzenHeader>
+        <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+            <RadzenPanelMenu Click="@(args => OnMenuClicked(args))">
+                <RadzenPanelMenuItem Icon="dashboard" Text="Dashboard" @onclick="@(()=>OnSideBarItemmClicked("dashboard"))" />
+                <RadzenPanelMenuItem Icon="card_membership" Text="Tenants" @onclick="@(()=>OnSideBarItemmClicked("tenants"))" />
+            </RadzenPanelMenu>
+        </RadzenSidebar>
+        <RadzenBody>
+            <div id="main-content" class="rz-p-4">
+                @Body
+            </div>
+        </RadzenBody>
+    </RadzenLayout>
+@*    <SideBar StickySideBar SelectedItem="@(AppState.SelectedSidebarItem)">
+        <SidebarItems>
+            <SidebarItem ModuleIndex="1" Icon="dashboard" Text="Dashboard" Name="Dashboard" OnItemClick="@(()=>OnSideBarItemmClicked("dashboard"))" />
+            <SidebarItem ModuleIndex="1" Icon="card_membership" Text="Tenants" Name="Tenants" OnItemClick="@(()=>OnSideBarItemmClicked("tenants"))" />
+        </SidebarItems>
+    </SideBar>
+    <div id="main-content">
+        @Body
+    </div>*@
+
+</section>
+
+@code {
+
+    [Inject] AuthenticationStateProvider? AuthProvider { get; set; }
+    [Inject] NavigationManager? navigationManager { get; set; }
+    [Inject] IAuthService? _authService { get; set; }
+    bool sidebarExpanded = false;
+    string headerName = "Dashboard";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (navigationManager is null || AuthProvider is null) return;
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var roles = authState.User.FindAll(x => x.Type == "role");
+
+        if (!roles.Any(x => x.Value == "Administrator"))
+        {
+            navigationManager.NavigateTo("/Dashboard");
+        }
+    }
+
+    private void OnSideBarItemmClicked(string name)
+    {
+        if (navigationManager is null) return;
+        AppState.SetSidebarItem(name);
+        switch (name)
+        {
+            case "dashboard":
+                navigationManager.NavigateTo("/Admin/Dashboard");
+                break;
+            case "tenants":
+                navigationManager.NavigateTo("/Admin/Tenants");
+                break;
+        }
+    }
+
+    private void OnMenuClicked(MenuItemEventArgs e)
+    {
+        if (navigationManager is null) return;
+        var menuName = e.Text;
+        switch (menuName.ToLower())
+        {
+            case "dashboard":
+                navigationManager.NavigateTo("/Admin/Dashboard");
+                headerName = "Dashboard";
+                break;
+            case "tenants":
+                navigationManager.NavigateTo("/Admin/Tenants");
+                headerName = "Tenants";
+                break;
+        }
+        sidebarExpanded = !sidebarExpanded;
+        StateHasChanged();
+    }
+
+    private async Task LogOut()
+    {
+        if (_authService is null) return;
+        await _authService.LogoutAsync();
+    }
+}

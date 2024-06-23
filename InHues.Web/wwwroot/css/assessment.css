@@ -1,0 +1,131 @@
+﻿/*8.268 / 11.693 inches = .7071 aspect ratio*/
+/*h = w/r ||   1,174.47 */
+.ass-wrapper {
+    height: 1075px;
+}
+.ass-wrapper, .ass-wrapper-footer {
+    width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+}
+
+.ass-header {
+    font-size: 2em;
+    font-weight: bolder;
+}
+
+.ass-pi-label {
+    margin-right: 0.4em;
+    width: 25%;
+}
+
+.ass-pi-val {
+    width: 75%;
+    border-bottom: 1px solid black;
+}
+
+.ass-divider-sm {
+    height: 1px;
+    margin: 0.6em 0;
+    background-color: black;
+    border-radius: 0px;
+}
+
+
+.canvas-wrapper {
+    position: relative;
+    width: 728px;
+}
+    .canvas-img {
+        width: 728px;
+    }
+
+.ass-subheader-prop-1 {
+    width: 70%;
+}
+    .ass-subheader-prop-1 > .ass-pi-label {
+        width: 15%;
+    }
+    .ass-subheader-prop-1 > .ass-pi-val {
+        width: 100%;
+    }
+.ass-subheader-prop-2 {
+    width: 10%;
+}
+    .ass-subheader-prop-2 > .ass-pi-label {
+        width: 50%;
+    }
+
+    .ass-subheader-prop-2 > .ass-pi-val {
+        width: 50%;
+    }
+.ass-subheader-prop-3 {
+    width: 20%;
+}
+
+    .ass-subheader-prop-3 > .ass-pi-label {
+        width: 35%;
+    }
+
+    .ass-subheader-prop-3 > .ass-pi-val {
+        width: 100%;
+    }
+.ass-subheader-prop-4 {
+    width: 50%;
+}
+
+    .ass-subheader-prop-4 > .ass-pi-label {
+        width: 50%;
+    }
+
+    .ass-subheader-prop-4 > .ass-pi-val {
+        width: 100%;
+    }
+.ass-subheader-prop-5 {
+    width: 50%;
+}
+
+    .ass-subheader-prop-5 > .ass-pi-label {
+        width: 20%;
+    }
+
+    .ass-subheader-prop-5 > .ass-pi-val {
+        width: 100%;
+    }
+
+.ass-subheader-prop-6 {
+    width: 50%;
+}
+
+    .ass-subheader-prop-6 > .ass-pi-label {
+        width: 40%;
+    }
+
+    .ass-subheader-prop-6 > .ass-pi-val {
+        width: 100%;
+    }
+
+.ass-subheader-prop-7 {
+    width: 50%;
+}
+
+    .ass-subheader-prop-7 > .ass-pi-label {
+        width: 45%;
+    }
+
+    .ass-subheader-prop-7 > .ass-pi-val {
+        width: 100%;
+    }
+
+.ass-subheader-prop-8 {
+    width: 100%;
+}
+
+    .ass-subheader-prop-8 > .ass-pi-label {
+        width: 15%;
+    }
+
+    .ass-subheader-prop-8 > .ass-pi-val {
+        width: 100%;
+    }

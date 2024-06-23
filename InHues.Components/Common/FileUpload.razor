@@ -1,0 +1,239 @@
+﻿@using InHues.Components.Helpers;
+@using InHues.Domain.DTO.Custom;
+@using InHues.Domain.Enums;
+@using Microsoft.AspNetCore.Components.Forms;
+@using Radzen.Blazor
+@using Radzen;
+
+@if (RenderInputField)
+{
+    <InputFile OnChange="async e=>{await LoadFiles(e);}" multiple="@IsMultiple" accept="@AcceptedFileTypes" id="@FileInputId" style="position:absolute;visibility:hidden"/>
+}
+
+@if (IsUsingCamera)
+{
+    <Camera OnSubmit="CameraResultHandler" />
+}else{
+     <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="10px">
+        <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" class="btn-capture-cam my-2 my-md-0" Style="width:213px"  ButtonStyle="ButtonStyle.Primary" Click="OnUploadCLick">Choose From Files</RadzenButton>
+        <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" class="btn-capture-cam my-2 my-md-0" Style="width:213px" ButtonStyle="ButtonStyle.Primary" Click="()=>{UseCamera(true);}">Capture Camera</RadzenButton>
+        <RadzenButton Variant="Variant.Flat" ButtonType="ButtonType.Button" class="btn-capture-cam my-2 my-md-0" Style="width:213px" ButtonStyle="ButtonStyle.Light"  Click="OnSubmitHandler">Proceed</RadzenButton>
+     </RadzenStack>
+    <div class="container-fluid">
+        <div class="row my-3">
+            <div class="col-12">
+                @if (IsLoading)
+                {
+                    <p style="font-size:11px; color: #6794B7;">Loading...</p>
+                }
+                else
+                {
+                    @if (FileCountError)
+                    {
+                        <p class="alert alert-danger validation-message b10-text text-hippie-blue">>Maximum allowed number of files exeeded.</p>
+                    }
+                    @if (FileTypeError)
+                    {
+                        <p class="alert alert-danger validation-message b10-text text-hippie-blue">Only files with file type @AcceptedFileTypes are accepted.</p>
+                    }
+                    @if (FileSizeError)
+                    {
+                        <p class="alert alert-danger validation-message b10-text text-hippie-blue">The max file size is @MaxFileSizeMb MB.</p>
+                    }
+                }
+                @if (Results.Any())
+                {
+                    <RadzenText TextStyle="TextStyle.H5" TextAlign="TextAlign.Center"> <strong>@Results.Count() File/s Uploaded.</strong></RadzenText>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                @if (Results.Any())
+                {
+                    if (!IsLoading)
+                    {
+                        foreach (var file in Results)
+                        {
+                            <RadzenCard class="m-3 mt-0">
+                                <div class="d-flex justify-content-center" style="position:relative;height:20em">
+                                    <RadzenIcon Icon="close" Style="position:absolute;right:0;" class="float-end my-2" @onclick="()=>{RemoveItem(file.Id);}" />
+                                    <img src="@file.Base64" class="image-upload-content" />
+                                </div>
+                               
+                            </RadzenCard>
+                        }
+                    }   
+                }
+
+             @*   <RadzenCard class="m-3 mt-0 pt-0">
+                    <RadzenIcon Icon="close" class="float-end my-2" />
+                    <img src="/img/blank_user.png" class="image-upload-content" />
+                </RadzenCard>*@
+            </div>
+        </div>
+    </div>
+}
+@code{
+    [Inject] IJSRuntime jsRuntime { get; set; }
+
+    [Parameter]
+    public bool IsMultiple{ get; set; }
+
+    [Parameter]
+    public List<FileType> AllowedFileTypes { get; set; } = new() { 
+        FileType.Jpeg,FileType.Jpg,FileType.Png
+    };
+
+    [Parameter]
+    public int MaxAllowedFiles { get; set; } = 1;
+
+    [Parameter]
+    public long MaxFileSizeMb { get; set; } = 5;
+    [Parameter]
+    public EventCallback<List<FileResponse>> OnSubmit { get; set; }
+
+    bool IsLoading = false;
+    bool RenderInputField = true;
+    string FileInputId = Guid.NewGuid().ToString();
+    long MaxFileSize => MaxFileSizeMb * 1024 * 1024;
+
+    bool IsUsingCamera = false;
+    bool FileSizeError = false;
+    bool FileCountError = false;
+    bool FileTypeError = false;
+    string AcceptedFileTypes => $".{string.Join(",.", AllowedFileTypes)}";
+
+    FileResponse? SelectedFile { get; set; }
+    List<FileResponse> Results = new();
+
+    void RefreshErrors()
+    {
+        FileSizeError = false;
+        FileTypeError = false;
+        FileCountError = false;
+    }
+
+    async Task OnUploadCLick()
+    {
+        await jsRuntime.InvokeVoidAsync("DTGeneric.OpenFile", FileInputId);
+    }
+    async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        Results.Clear();
+        RefreshErrors();
+        var fileCount = e.FileCount;
+        if (fileCount < 1) return;
+
+        IsLoading = true;
+        if (fileCount > MaxAllowedFiles)
+        {
+            IsLoading = false;
+            FileCountError = true;
+            return;
+        }
+
+        foreach (var file in e.GetMultipleFiles())
+        {
+            try
+            {
+                if (file.Size > MaxFileSize)
+                {
+                    FileSizeError = true;
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(file.ContentType))
+                {
+                    Console.WriteLine("Heic file detected");
+
+                    FileTypeError = true;
+                    //Results.Add(await MorphData(file));
+                    continue;
+                }
+
+                if (!AcceptedFileTypes.Contains(file.ContentType.Split('/')[1], StringComparison.InvariantCultureIgnoreCase))
+                {
+                    FileTypeError = true;
+                    continue;
+                }
+
+                if (!FileSizeError && !FileTypeError)
+                {
+                    Results.Add(await MorphData(file));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"File: {file.Name} Error: {ex.Message}");
+            }
+        }
+        IsLoading = false;
+    }
+
+    async Task<FileResponse> MorphData(IBrowserFile file)
+    {
+        string base64 = await GetImageUrl(file);
+        return new FileResponse()
+            {
+                FileName = file.Name,
+                Size = file.Size,
+                Base64 = base64,
+                ContentType = file.ContentType,
+                ByteArray = BrowserfileHelper.GetByteArray(base64),
+                IsFinalized = file.ContentType.Contains("image") ? false : true
+            };
+    }
+
+    async Task<string> GetImageUrl(IBrowserFile image)
+    {
+        var buffers = new byte[image.Size];
+        var _maxByte = ((MaxFileSizeMb * 1024) * 1024);
+        await image.OpenReadStream(_maxByte).ReadAsync(buffers);
+        string imageType = image.ContentType;
+
+        return ByteToBase64(imageType, buffers);
+    }
+    string ByteToBase64(string imageType, byte[] data)
+    {
+        return $"data:{imageType};base64,{Convert.ToBase64String(data)}";
+    }
+
+    async Task OnCancel()
+    {
+        await OnSubmit.InvokeAsync(null);
+    }
+    async Task OnSubmitHandler()
+    {
+        if (!Results.Any()) { await OnCancel();return; }
+        await OnSubmit.InvokeAsync(Results);
+    }
+    void RemoveItem(string fileId)
+    {
+        Results.RemoveAll(x => x.Id == fileId);
+    }
+    void UseCamera(bool openCamera)
+    {
+        if (openCamera && IsMultiple && Results.Count() >= MaxAllowedFiles)
+        {
+            FileSizeError = true;
+            return;
+        }
+
+        IsUsingCamera = openCamera;
+        StateHasChanged();
+    }
+    void CameraResultHandler(string result)
+    {
+        if (!IsMultiple) Results = new();
+        Results.Add(new()
+        {
+            FileName = $"{Guid.NewGuid()}_{DateTime.Now.ToString("MM_dd_yyyy_HH_mm_tt")}",
+            Size = 0,
+            Base64 = result,
+            ContentType = "image/png",
+            IsFinalized = true,
+        });
+        UseCamera(false);
+    }
+}

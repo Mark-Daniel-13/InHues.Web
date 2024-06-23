@@ -1,0 +1,37 @@
+﻿<div style="width: 100%;" class="rz-form-field rz-variant-outlined" id="T9LWXVK8Hk" onfocusin="this.classList.add('rz-state-focused')" onfocusout="this.classList.remove('rz-state-focused')" _bl_2874="">
+    <!--!-->
+    <div class="rz-form-field-content">
+        <!--!-->
+        <!--!--><!--!-->
+        <!--!-->    <input style="width: 100%;" type="date" name="@Name" @bind-value="@Date" class="rz-textbox rz-state-empty" tabindex="0" placeholder="@PlaceHolder" autocomplete="on" id="Q4e7x-zE7U" _bl_2920=""><!--!-->
+        <!--!-->
+        <label class="rz-form-field-label rz-text-truncate">@Label</label><!--!-->
+        <!--!-->
+    </div><!--!-->
+</div>
+@code{
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string PlaceHolder { get; set; } = string.Empty;
+
+    private DateTime? _date;
+    [Parameter]
+    public DateTime? Date
+    {
+        get => _date;
+        set
+        {
+            if (value == _date) return;
+            _date = value;
+            if (DateChanged.HasDelegate)
+            {
+                DateChanged.InvokeAsync(_date);
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<DateTime?> DateChanged { get; set; }
+}
