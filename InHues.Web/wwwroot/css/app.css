@@ -282,7 +282,7 @@ html, body {
 
 .logo-container {
     display: flex;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 0rem 1rem;
     align-items: center;
     justify-content: center;
 }
