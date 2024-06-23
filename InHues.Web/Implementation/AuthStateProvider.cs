@@ -11,21 +11,21 @@ namespace InHues.Web.Implementation
     {
         private readonly AuthenticationState _anonymous;
         private readonly IStorageMngmt _storageMngmt;
-        private readonly AppKeys _dermtricsKeys;
+        private readonly AppKeys _appKeys;
         readonly NavigationManager NavManager;
         readonly AppState _appState;
-        public AuthStateProvider(IStorageMngmt storageMngmt, AppKeys dermtricsKeys, NavigationManager navManager, AppState appState)
+        public AuthStateProvider(IStorageMngmt storageMngmt, AppKeys appKeys, NavigationManager navManager, AppState appState)
         {
             _anonymous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())); ;
             _storageMngmt = storageMngmt;
-            _dermtricsKeys = dermtricsKeys;
+            _appKeys = appKeys;
             NavManager = navManager;
             _appState = appState;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var storage_token = await _storageMngmt?.GetValueAsync(_dermtricsKeys.AccessToken);
+            var storage_token = await _storageMngmt?.GetValueAsync(_appKeys.AccessToken);
             if (string.IsNullOrEmpty(storage_token)) return _anonymous;
 
             if (IsTokenExired(storage_token)) {

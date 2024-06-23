@@ -15,10 +15,10 @@ namespace InHues.Bridge
     {
         HttpClient HttpClient;
         JsonSerializerOptions JsonSerializerOptions;
-        AppKeys DermtricsKeys;
+        AppKeys AppKeys;
         IStorageMngmt StoreMngmt;
         AppState AppState;
-        public Bridge(AppKeys dermtricsKeys, AppState appState, IStorageMngmt storeMngmt)
+        public Bridge(AppKeys appKeys, AppState appState, IStorageMngmt storeMngmt)
         {
             HttpClient = new();
             JsonSerializerOptions = new()
@@ -27,7 +27,7 @@ namespace InHues.Bridge
                 PropertyNameCaseInsensitive = false,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            DermtricsKeys = dermtricsKeys;
+            AppKeys = appKeys;
             AppState = appState;
             StoreMngmt = storeMngmt;
         }
@@ -56,7 +56,7 @@ namespace InHues.Bridge
                         stringBuilder.Append($"&{queryParam.Key}={queryParam.Value}");
                     }
                     var queryString = queryParams.Any() ? stringBuilder.ToString().Substring(1) : string.Empty;
-                    _url = $"{DermtricsKeys.BackendOrigin}{url}?{queryString}";
+                    _url = $"{AppKeys.BackendOrigin}{url}?{queryString}";
                 }
                 else {
                     var stringBuilder = new StringBuilder();
@@ -66,7 +66,7 @@ namespace InHues.Bridge
                     }
                     var queryString = queryParams.Any() ? stringBuilder.ToString().Substring(1) : string.Empty;
 
-                    _url = $"{DermtricsKeys.BackendOrigin}{url}";
+                    _url = $"{AppKeys.BackendOrigin}{url}";
 
                     var index = _url.LastIndexOf('/');
                     _url = $"{_url.Substring(0, index + 1)}{requestParams.Id}?{queryString}";
@@ -80,7 +80,7 @@ namespace InHues.Bridge
                     RequestUri = new Uri(_url),
                 };
                 request.Headers.Add("Accept", "*/*");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(DermtricsKeys.AccessToken));
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(AppKeys.AccessToken));
 
                 var response = await HttpClient.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
@@ -125,7 +125,7 @@ namespace InHues.Bridge
                 var _url = string.Empty;
 
 
-                _url = $"{DermtricsKeys.BackendOrigin}{url}";
+                _url = $"{AppKeys.BackendOrigin}{url}";
 
                 var request = new HttpRequestMessage
                 {
@@ -133,7 +133,7 @@ namespace InHues.Bridge
                     RequestUri = new Uri(_url),
                 };
                 request.Headers.Add("Accept", "*/*");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(DermtricsKeys.AccessToken));
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(AppKeys.AccessToken));
 
                 var response = await HttpClient.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
@@ -177,7 +177,7 @@ namespace InHues.Bridge
         {
             try
             {
-                var _url = DermtricsKeys.BackendOrigin + url;
+                var _url = AppKeys.BackendOrigin + url;
                 if (requesType == RequestType.DELETE) {
                     var index = _url.LastIndexOf('/');
                     _url = _url.Substring(0, index + 1) + request;
@@ -190,7 +190,7 @@ namespace InHues.Bridge
                 };
 
                 httpRequest.Headers.Add("Accept", "*/*");
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(DermtricsKeys.AccessToken));
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await StoreMngmt.GetValueAsync(AppKeys.AccessToken));
 
                 //if (AppState.CurrentUser?.TenantId is not null) {
                 //    Type model = typeof(TRequest);

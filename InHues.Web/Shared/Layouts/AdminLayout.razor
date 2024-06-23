@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-between p-2 mb-1">
     <div class="d-flex align-items-center pe-3">
-        <img src="/img/dermtrics_logo.png" class="img-host-logo m-1">
+        <img src="/img/InHuesLogo.svg" class="img-host-logo m-1">
     </div>
     <RadzenStack Orientation="Orientation.Horizontal" Gap="0" JustifyContent="JustifyContent.End">
         <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End" JustifyContent="JustifyContent.Center" Gap="0">
@@ -47,7 +47,7 @@
         <RadzenSidebar @bind-Expanded="@sidebarExpanded">
             <RadzenPanelMenu Click="@(args => OnMenuClicked(args))">
                 <RadzenPanelMenuItem Icon="dashboard" Text="Dashboard" @onclick="@(()=>OnSideBarItemmClicked("dashboard"))" />
-                <RadzenPanelMenuItem Icon="card_membership" Text="Tenants" @onclick="@(()=>OnSideBarItemmClicked("tenants"))" />
+                <RadzenPanelMenuItem Icon="card_membership" Text="Customers" @onclick="@(()=>OnSideBarItemmClicked("customers"))" />
             </RadzenPanelMenu>
         </RadzenSidebar>
         <RadzenBody>
@@ -59,7 +59,7 @@
 @*    <SideBar StickySideBar SelectedItem="@(AppState.SelectedSidebarItem)">
         <SidebarItems>
             <SidebarItem ModuleIndex="1" Icon="dashboard" Text="Dashboard" Name="Dashboard" OnItemClick="@(()=>OnSideBarItemmClicked("dashboard"))" />
-            <SidebarItem ModuleIndex="1" Icon="card_membership" Text="Tenants" Name="Tenants" OnItemClick="@(()=>OnSideBarItemmClicked("tenants"))" />
+            <SidebarItem ModuleIndex="1" Icon="card_membership" Text="Customers" Name="Customers" OnItemClick="@(()=>OnSideBarItemmClicked("customers"))" />
         </SidebarItems>
     </SideBar>
     <div id="main-content">
@@ -85,7 +85,7 @@
 
         if (!roles.Any(x => x.Value == "Administrator"))
         {
-            navigationManager.NavigateTo("/Dashboard");
+            navigationManager.NavigateTo("/");
         }
     }
 
@@ -98,8 +98,8 @@
             case "dashboard":
                 navigationManager.NavigateTo("/Admin/Dashboard");
                 break;
-            case "tenants":
-                navigationManager.NavigateTo("/Admin/Tenants");
+            case "customers":
+                navigationManager.NavigateTo("/Admin/Customers");
                 break;
         }
     }
@@ -114,9 +114,9 @@
                 navigationManager.NavigateTo("/Admin/Dashboard");
                 headerName = "Dashboard";
                 break;
-            case "tenants":
-                navigationManager.NavigateTo("/Admin/Tenants");
-                headerName = "Tenants";
+            case "customers":
+                navigationManager.NavigateTo("/Admin/Customers");
+                headerName = "Customers";
                 break;
         }
         sidebarExpanded = !sidebarExpanded;

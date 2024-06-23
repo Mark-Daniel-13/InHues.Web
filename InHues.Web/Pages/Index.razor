@@ -38,7 +38,6 @@
 
                 <p class="dt-09 mb-0 text-primary" style="cursor:pointer" @onclick="ResetPass">Forgot Password?</p>
                 <RadzenButton Variant="Variant.Flat" class="primary-bg" ButtonType="ButtonType.Submit" Text="@(IsLoggingIn ? "Logging In.." : "Log In")" Click="OnLoginAsync"></RadzenButton>
-                <p class="dt-10 text-center">Don't have an account? <span class="text-primary" style="cursor:pointer" @onclick="OnRegister">Sign Up</span></p>
             </RadzenStack>
         </RadzenTemplateForm>
     </div>
@@ -65,10 +64,6 @@
         if (!verified) return;
         await ValidateAuth();
     }
-    private void OnRegister()
-    {
-        NavManager.NavigateTo("/Register");
-    }
     private async Task ValidateAuth()
     {
         if (AuthProvider is null || _storageMngmt is null) return;
@@ -80,18 +75,14 @@
 
         if (!roles.Any(x => x.Value == "Administrator"))
         {
-            UserResponseDto? currentUser = AppState.CurrentUser is null ? null : (UserResponseDto)AppState.CurrentUser;
-            var hasProfile = authState.User.FindFirst("profileId")?.Value ?? currentUser?.Id.ToString();
-            if (hasProfile is null || hasProfile == "0") { NavManager.NavigateTo("/UserProfile"); return; }
-
             var isEnabled = authState.User.FindFirst("isEnabled")?.Value;
             if (isEnabled is null) await _authService.LogoutAsync();
 
             if (!Convert.ToBoolean(isEnabled)) { NavManager.NavigateTo("/Account/Inactive"); return; }
         }
 
-        var tenantName = authState.User.FindFirst(x => x.Type == "tenantName");
-        string? trimed = tenantName?.Value?.Replace(" ", string.Empty);
+        var customerId = authState.User.FindFirst(x => x.Type == "id");
+        string? trimed = customerId?.Value?.Replace(" ", string.Empty);
         string redirectURL = roles.Any(x => x.Value == "Administrator") ? "/Admin/Dashboard" : $"/{trimed}/Dashboard";
         if (!string.IsNullOrEmpty(await _storageMngmt.GetValueAsync(_keys.AccessToken))) NavManager.NavigateTo(redirectURL);
     }

@@ -12,7 +12,7 @@ namespace InHues.Web.Implementation
             BackendOrigin = WAHE.Environment switch
             {
                 //"Development" => "https://api.staging.dermtrics.com",
-                "Development" => "https://localhost:7126",
+                "Development" => "https://localhost:44334",
                 "Production" => "https://api.staging.dermtrics.com",
                 "Staging" => "",
                 _ => string.Empty
