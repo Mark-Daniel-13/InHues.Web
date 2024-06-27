@@ -18,8 +18,8 @@ namespace InHues.Web.Implementation
                 _ => string.Empty
             };
         }
-        public readonly string AccessToken = "d_tkn";
-        public readonly string RefreshToken = "dr_tkn";
+        public readonly string AccessToken = "ih_tkn";
+        public readonly string RefreshToken = "ihr_tkn";
 
     }
 }

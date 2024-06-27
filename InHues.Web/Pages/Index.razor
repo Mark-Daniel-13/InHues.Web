@@ -73,16 +73,21 @@
         var roles = authState.User.FindAll(x => x.Type == "role");
 
 
-        if (!roles.Any(x => x.Value == "Administrator"))
-        {
-            var isEnabled = authState.User.FindFirst("isEnabled")?.Value;
-            if (isEnabled is null) await _authService.LogoutAsync();
+        var isEnabled = authState.User.FindFirst("isEnabled")?.Value;
+        if (isEnabled is null) await _authService.LogoutAsync();
+        if (!Convert.ToBoolean(isEnabled)) { NavManager.NavigateTo("/Account/Inactive"); return; }
 
-            if (!Convert.ToBoolean(isEnabled)) { NavManager.NavigateTo("/Account/Inactive"); return; }
-        }
+
 
         var customerId = authState.User.FindFirst(x => x.Type == "id");
         string? trimed = customerId?.Value?.Replace(" ", string.Empty);
+        var userModel = new UserViewModel()
+        {
+            UserId = trimed,
+            IsEnabled = isEnabled is null ? false : Convert.ToBoolean(isEnabled),
+            Email = authState.User.FindFirst(x => x.Type == "email")?.Value?.ToString()
+        };
+        AppState.SetCurrentUser(userModel);
         string redirectURL = roles.Any(x => x.Value == "Administrator") ? "/Admin/Dashboard" : $"/{trimed}/Dashboard";
         if (!string.IsNullOrEmpty(await _storageMngmt.GetValueAsync(_keys.AccessToken))) NavManager.NavigateTo(redirectURL);
     }

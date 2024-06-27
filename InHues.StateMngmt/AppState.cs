@@ -17,12 +17,12 @@ namespace InHues.StateMngmt
         private string _selectedSidebarItem = string.Empty;
         private string _prevURL = string.Empty;
         private bool _isRunningRequest = false;
-        object? _currentUser;
+        UserViewModel? _currentUser;
 
         public string SelectedSidebarItem { get => _selectedSidebarItem; }
         public string PrevURL { get => _prevURL; }
         public bool IsRunningRequest { get => _isRunningRequest; }
-        public object? CurrentUser { get => _currentUser; }
+        public UserViewModel? CurrentUser { get => _currentUser; }
 
 
         #region Setters
@@ -54,7 +54,7 @@ namespace InHues.StateMngmt
             {
                 _prevURL = value;
             }
-            public void SetCurrentUser(object value)
+            public void SetCurrentUser(UserViewModel value)
             {
                 _currentUser = value;
             }

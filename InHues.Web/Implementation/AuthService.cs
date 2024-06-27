@@ -14,15 +14,15 @@ namespace InHues.Web.Implementation
         readonly NotificationService? _notifService;
         readonly IStorageMngmt _storageMngmt;
         readonly AuthenticationStateProvider _authStateProvider;
-        readonly AppKeys _dermtricsKeys;
+        readonly AppKeys _appkeys;
         readonly AppState _appState;
-        public AuthService(IBridge? bridge, NotificationService? notifService, AuthenticationStateProvider authStateProvider, IStorageMngmt storageMngmt, AppKeys dermtricsKeys, AppState appState)
+        public AuthService(IBridge? bridge, NotificationService? notifService, AuthenticationStateProvider authStateProvider, IStorageMngmt storageMngmt, AppKeys appKeys, AppState appState)
         {
             _bridge = bridge;
             _notifService = notifService;
             _authStateProvider = authStateProvider;
             _storageMngmt = storageMngmt;
-            _dermtricsKeys = dermtricsKeys;
+            _appkeys = appKeys;
             _appState = appState;
         }
         public async Task LogoutAsync()
@@ -54,8 +54,8 @@ namespace InHues.Web.Implementation
             }
 
 
-            await _storageMngmt.SetValueAsync(_dermtricsKeys.AccessToken,loginUser.Response.Token);
-            await _storageMngmt.SetValueAsync(_dermtricsKeys.RefreshToken, loginUser.Response.RefreshToken);
+            await _storageMngmt.SetValueAsync(_appkeys.AccessToken,loginUser.Response.Token);
+            await _storageMngmt.SetValueAsync(_appkeys.RefreshToken, loginUser.Response.RefreshToken);
 
             ((AuthStateProvider)_authStateProvider)?.NotifyUserLogIn(loginUser.Response.Token);
             return true;
@@ -94,8 +94,8 @@ namespace InHues.Web.Implementation
             });
 
 
-            await _storageMngmt.SetValueAsync(_dermtricsKeys.AccessToken, createQuery.Response.Token);
-            await _storageMngmt.SetValueAsync(_dermtricsKeys.RefreshToken, createQuery.Response.RefreshToken);
+            await _storageMngmt.SetValueAsync(_appkeys.AccessToken, createQuery.Response.Token);
+            await _storageMngmt.SetValueAsync(_appkeys.RefreshToken, createQuery.Response.RefreshToken);
 
             ((AuthStateProvider)_authStateProvider)?.NotifyUserLogIn(createQuery.Response.Token);
             return true;

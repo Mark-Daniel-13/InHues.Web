@@ -1,0 +1,82 @@
+﻿@using InHues.Domain.DTO.V1.Identity.Request
+@using Mapster;
+<div>
+    <RadzenTemplateForm TItem="UserResponseDto" Data="Payload" Submit="OnSubmitHandler">
+        <RadzenCard>
+            <div>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Username</RadzenText>
+                <RadzenTextBox Placeholder="Enter Username" class="w-100" Name="UserName" @bind-Value="Payload.UserName" />
+                <RadzenRequiredValidator Component="UserName" Text="Username is required" Popup=true Style="position: relative" />
+            </div> 
+            
+            <div>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Is User Deleted?</RadzenText>
+                <RadzenDropDown @bind-Value="Payload.IsDeleted" Data=@IsDeletedOption Name="IsDeleted" />
+            </div>
+
+          <RadzenStack JustifyContent="JustifyContent.End" class="pt-3" Orientation="Orientation.Horizontal">
+                <RadzenButton Variant="Variant.Flat" IsBusy="@IsBusy" ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Light" />
+                <RadzenButton Variant="Variant.Flat" IsBusy="@IsBusy" ButtonType="ButtonType.Button" Text="Cancel" ButtonStyle="ButtonStyle.Danger" Click="OnCancelClick" />
+          </RadzenStack>
+
+        </RadzenCard>
+    </RadzenTemplateForm>
+</div>
+@code{
+    [Parameter]
+    public UserResponseDto Payload { get; set; } = new();
+    [Parameter]
+    public Action OnCancelClick { get; set; } = () => { };
+    [Parameter]
+    public EventCallback<UserResponseDto> OnSubmitEvent { get; set; }
+    [Inject] IAuthService _authService { get; set; }
+    List<bool> IsDeletedOption = new() { true,false};
+    bool IsBusy = false;
+    async Task OnSubmitHandler(UserResponseDto item)
+    {
+        if (_authService is null || IsBusy) return;
+        var route = string.IsNullOrEmpty(Payload.Id)? ApiRoutes.Identity.Register : ApiRoutes.Identity.Update;
+        var type = string.IsNullOrEmpty(Payload.Id) ? RequestType.POST : RequestType.PATCH;
+
+        IsBusy = true;
+        bool query;
+        if (type == RequestType.POST)
+        {
+            var requestPayload = Payload.Adapt<RegisterIdentityRequest>();
+            requestPayload.Password = PasswordGenerator.GenerateRandomPassword();
+            query = await _authService.RegisterAsync(requestPayload);
+        }
+        else
+        {
+            var requestPayload = Payload.Adapt<UserRequestDto>();
+            var request = await Bridge.CommandJsonAsync<AuthSuccessResponse, UserRequestDto>(route, requestPayload, type);
+            query = request.IsSuccess;
+        }
+
+        IsBusy = false;
+        if (!query)
+        {
+            var error = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = $"{(type == RequestType.POST ? "Saving" : "Updating")} Customer Data Failed",
+                Detail = "Please try again.",
+                Duration = 1500
+            };
+
+            NotifService.Notify(error);
+            return;
+        }; 
+
+        NotifService.Notify(new()
+        {
+
+            Severity = NotificationSeverity.Success,
+            Summary = $"Tenant {Payload.UserName} has been {(type == RequestType.POST ? "added" : "updated")}",
+            Duration = 1500
+        });
+
+        await OnSubmitEvent.InvokeAsync(item);
+    }
+
+}

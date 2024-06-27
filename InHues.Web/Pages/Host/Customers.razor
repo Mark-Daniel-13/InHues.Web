@@ -1,0 +1,100 @@
+﻿@page "/Admin/Customers"
+@using InHues.Domain.DTO.V1.Identity.Request
+<div class="page-header">
+    <div class="header-title">
+        <RadzenText TextStyle="TextStyle.DisplayH6" Text="Tenant List" Style="font-weight:bold" />
+    </div>
+    <div class="header-buttons">
+        <button type="button" class="rz-ripple" @onclick="Add">
+            <RadzenIcon Icon="add_circle" />
+            <span class="btn-text">Add</span>
+        </button>
+    </div>
+</div>
+
+<div class="page-body">
+    <RadzenDataGrid @ref="DGrid.grid" Data="@DGrid.DataList.Values" Count="@DGrid.DataList.Count" LoadData="@LoadData" TItem="UserResponseDto" AllowVirtualization="true" Style="height:400px" RowClick="ViewDetails">
+        <Columns>
+            <RadzenDataGridColumn TItem="UserResponseDto" Property="Email" Title="Email" />
+            <RadzenDataGridColumn TItem="UserResponseDto" Property="UserName" Title="UserName" />
+            <RadzenDataGridColumn TItem="UserResponseDto" Property="InitialPassword" Title="Initial Password" />
+            <RadzenDataGridColumn TItem="UserResponseDto" Property="IsDeleted" Title="IsDeleted" />
+            <RadzenDataGridColumn Context="customer" Width="100px" TItem="UserResponseDto">
+                <Template>
+                    <RadzenButton Variant="Variant.Outlined" Icon="edit_square" ButtonStyle="ButtonStyle.Primary" Click="async ()=>{ await Update(customer);}" Style="cursor:pointer;" @onclick:stopPropagation="true" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code {
+    DataGrid<UserResponseDto> DGrid = new();
+    
+    async Task LoadData(LoadDataArgs args)
+    {
+
+        if (Bridge is null) return;
+
+        var requestParams = new OdataRequestBase()
+        {
+            Count = true,
+            Skip = args?.Skip ?? 0,
+            Top = args?.Top ?? 0,
+            OrderBy = "id desc",
+        };
+
+        var query = await Bridge.GetJsonAsync<OdataResponse<UserResponseDto>>(ApiRoutes.Identity.GetUsers, requestParams);
+        if (!query.IsSuccess) return;
+
+        DGrid.DataList = query.Response ?? new();
+    }
+
+    async Task Add()
+    {
+        if (DialogService is null) return;
+        await DialogService.OpenAsync<CustomerAddEdit>(
+            "Add New Custumer",
+            new Dictionary<string, object>()
+                {
+                { "Payload", new UserResponseDto()},
+                { "OnCancelClick", OnCancelDialog},
+                { "OnSubmitEvent", EventCallback.Factory.Create<UserResponseDto>(this,OnSave)}
+                },
+            new DialogOptions() { Width = "80%", CssClass = "custom-dialog" }
+        );
+    }
+    async Task Update(UserResponseDto item)
+    {
+        if (DialogService is null) return;
+        await DialogService.OpenAsync<CustomerAddEdit>(
+            "Update Custumer Data",
+            new Dictionary<string, object>()
+                {
+                { "Payload", item},
+                { "OnCancelClick", OnCancelDialog},
+                { "OnSubmitEvent", EventCallback.Factory.Create<UserResponseDto>(this,OnUpdate)}
+                    },
+            new DialogOptions() { Width = "80%", CssClass = "custom-dialog" }
+        );
+    }
+    async Task OnSave(UserResponseDto item)
+    {
+        await DGrid.grid.InsertRow(item);
+        DialogService.Close();
+    }
+    async Task OnUpdate(UserResponseDto item)
+    {
+        await DGrid.grid.UpdateRow(item);
+        DialogService.Close();
+    }
+    void OnCancelDialog()
+    {
+        DialogService.Close();
+    }
+    void ViewDetails(DataGridRowMouseEventArgs<UserResponseDto> item)
+    {
+        NavManager.NavigateTo($"/Admin/Tenants/Details?TenantId={item.Data.Id}");
+
+    }
+}
