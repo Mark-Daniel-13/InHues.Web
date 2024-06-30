@@ -64,7 +64,6 @@ namespace InHues.Web.Implementation
         public async Task<bool> RegisterAsync(RegisterIdentityRequest payload) {
             if (_bridge is null) return false;
 
-            payload.UserName = payload.Email;
             var createQuery = await _bridge.CommandJsonAsync<AuthSuccessResponse, RegisterIdentityRequest>(ApiRoutes.Identity.Register, payload, RequestType.POST);
             if (!createQuery.IsSuccess)
             {
@@ -94,10 +93,10 @@ namespace InHues.Web.Implementation
             });
 
 
-            await _storageMngmt.SetValueAsync(_appkeys.AccessToken, createQuery.Response.Token);
-            await _storageMngmt.SetValueAsync(_appkeys.RefreshToken, createQuery.Response.RefreshToken);
+            //await _storageMngmt.SetValueAsync(_appkeys.AccessToken, createQuery.Response.Token);
+            //await _storageMngmt.SetValueAsync(_appkeys.RefreshToken, createQuery.Response.RefreshToken);
 
-            ((AuthStateProvider)_authStateProvider)?.NotifyUserLogIn(createQuery.Response.Token);
+            //((AuthStateProvider)_authStateProvider)?.NotifyUserLogIn(createQuery.Response.Token);
             return true;
         }
     }

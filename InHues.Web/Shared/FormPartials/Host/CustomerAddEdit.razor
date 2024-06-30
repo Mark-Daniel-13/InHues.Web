@@ -5,8 +5,9 @@
         <RadzenCard>
             <div>
                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Username</RadzenText>
-                <RadzenTextBox Placeholder="Enter Username" class="w-100" Name="UserName" @bind-Value="Payload.UserName" />
+                <RadzenTextBox Placeholder="Enter Username" class="w-100 mb-2" Name="UserName" @bind-Value="Payload.UserName"/>
                 <RadzenRequiredValidator Component="UserName" Text="Username is required" Popup=true Style="position: relative" />
+                @* <RadzenButton Click="GenerateUsername">Generate Username</RadzenButton> *@
             </div> 
             
             <div>
@@ -29,6 +30,7 @@
     public Action OnCancelClick { get; set; } = () => { };
     [Parameter]
     public EventCallback<UserResponseDto> OnSubmitEvent { get; set; }
+    [Inject] IJSRuntime _jSRuntime { get; set; }
     [Inject] IAuthService _authService { get; set; }
     List<bool> IsDeletedOption = new() { true,false};
     bool IsBusy = false;
@@ -42,13 +44,23 @@
         bool query;
         if (type == RequestType.POST)
         {
-            var requestPayload = Payload.Adapt<RegisterIdentityRequest>();
-            requestPayload.Password = PasswordGenerator.GenerateRandomPassword();
+            var requestPayload = new RegisterIdentityRequest()
+            {
+                UserName = Payload.UserName,
+                Password = PasswordGenerator.GenerateRandomPassword(),
+                Roles = new() {"Customer"}
+            };
             query = await _authService.RegisterAsync(requestPayload);
         }
         else
         {
-            var requestPayload = Payload.Adapt<UserRequestDto>();
+            var requestPayload = new UserRequestDto()
+            {
+                Id = Payload.Id,
+                Username=  Payload.UserName,
+                Email = Payload.Email,
+                IsDeleted = Payload.IsDeleted
+            };
             var request = await Bridge.CommandJsonAsync<AuthSuccessResponse, UserRequestDto>(route, requestPayload, type);
             query = request.IsSuccess;
         }
@@ -77,6 +89,13 @@
         });
 
         await OnSubmitEvent.InvokeAsync(item);
+    }
+
+    async Task GenerateUsername()
+    {
+        var username = await _jSRuntime.InvokeAsync<string>("Generic.GenerateUsername");
+        Payload.UserName = username;
+        StateHasChanged();
     }
 
 }

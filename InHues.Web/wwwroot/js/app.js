@@ -9,7 +9,7 @@
     return null;
 }
 
-const DTGeneric = {
+const Generic = {
     LayoutDotnetRef: null,
     OpenFile: function (elementId) {
         document.getElementById(elementId).click();
@@ -20,59 +20,6 @@ const DTGeneric = {
             var inputElement = inputField.querySelector('input');
             inputElement.select();
         }
-    },
-    PrintHTML: function (elementId,isRx)
-    {
-        let paperWidth, paperHeight;
-        let stylesheet;
-        let imageWidth;
-        let printSize;
-        if (isRx) {
-            paperWidth = 5.5;
-            paperHeight = 8.5;
-            stylesheet = "css/rx_print.css";
-            printSize = "5.5in 8.5in";
-            imageWidth = inchesToPixels(paperWidth-0.5);
-        } else {
-            paperWidth = 8.26;
-            paperHeight = 11.69;
-            stylesheet = "css/assessment_print.css";
-            printSize = "A4;";
-            imageWidth = inchesToPixels(paperWidth - 0.5);
-        }
-        var element = document.getElementById(elementId);
-        if (element) {
-            printJS({
-                printable: elementId,
-                type: 'html',
-                css: ["css/custom.css", "css/app.css", "css/bootstrap/bootstrap.min.css", stylesheet],
-                scanStyles: false,
-                targetStyles: "*",
-                style: `@page{size:${printSize}; margin:0; padding:0;} .canvas-img {width:${imageWidth}px !important;}`
-            })
-        }
-        console.log(`imgHeight - ${imgHeight}`);
-        console.log(`paperWidth - ${inchesToPixels(paperWidth - 0.2)}px`);
-        console.log(`paperHeight - ${inchesToPixels(paperHeight - 0.2)}px`);
-
-
-
-        //var element = document.getElementById(elementId);
-        //const computedRxImgHeight = (inchesToPixels(paperWidth) * 850) / 760;
-        //const rxStyles = `.rx-img{width:${inchesToPixels(paperWidth)}px !important; height: ${computedRxImgHeight}px !important}`;
-        //if (element) {
-        //    printJS({
-        //        printable: elementId,
-        //        type: 'html',
-        //        css: ["css/custom.css", "css/app.css", "css/bootstrap/bootstrap.min.css", "css/rx_print.css"],
-        //        scanStyles: false,
-        //        targetStyles: "*",
-        //        style: `#${elementId}-content {width:${inchesToPixels(paperWidth)}px; height:${inchesToPixels(paperHeight)}px; color:red !important; ${rxStyles}}`
-        //    })
-        //}
-        //console.log(`rx-img-height - ${computedRxImgHeight}px`);
-        //console.log(`paperWidth - ${inchesToPixels(paperWidth)}px`);
-        //console.log(`paperHeight - ${inchesToPixels(paperHeight)}px`);
     },
     SetLayoutDotNetObject: function (e) {
         LayoutDotnetRef = e;
@@ -102,7 +49,7 @@ function inchesToPixels(inches) {
     return pixels;
 }
 
-const DTCamera = {
+const Camera = {
     videoStream: null,
 
     CaptureImage: function (videoId,canvasId) {
@@ -149,7 +96,7 @@ const DTCamera = {
                 })
                 .then((stream) => {
                     video.srcObject = stream;
-                    DTCamera.videoStream = stream;
+                    Camera.videoStream = stream;
                 })
                 .catch((error) => {
                     console.error('Error accessing camera:', error);
@@ -160,12 +107,12 @@ const DTCamera = {
     },
 
     StopCamera: function () {
-        if (DTCamera.videoStream) {
-            const tracks = DTCamera.videoStream.getTracks();
+        if (Camera.videoStream) {
+            const tracks = Camera.videoStream.getTracks();
             tracks.forEach((track) => {
                 track.stop(); // Stop each track in the stream
             });
-            DTCamera.videoStream = null; // Reset the stream reference
+            Camera.videoStream = null; // Reset the stream reference
         }
     },
 
@@ -203,5 +150,5 @@ const DTCamera = {
     
 }
 
-window.DTCamera = DTCamera;
-window.DTGeneric = DTGeneric;
+window.Camera = Camera;
+window.Generic = Generic;

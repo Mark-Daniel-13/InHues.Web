@@ -19,10 +19,10 @@
 
                 <RadzenFormField Text="Email" Variant="Variant.Outlined" Style="width: 100%;">
                     <ChildContent>
-                        <RadzenTextBox Placeholder="Email" Name="email" @bind-Value="LoginInput.Email" />
+                        <RadzenTextBox Placeholder="Email / Username" Name="email" @bind-Value="LoginInput.Email" />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="email" Text="Enter Email" Popup="true" Style="position: relative" />
+                        <RadzenRequiredValidator Component="email" Text="Enter Email / Username" Popup="true" Style="position: relative" />
                     </Helper>
                 </RadzenFormField>
 

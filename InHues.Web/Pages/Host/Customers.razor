@@ -2,7 +2,7 @@
 @using InHues.Domain.DTO.V1.Identity.Request
 <div class="page-header">
     <div class="header-title">
-        <RadzenText TextStyle="TextStyle.DisplayH6" Text="Tenant List" Style="font-weight:bold" />
+        <RadzenText TextStyle="TextStyle.DisplayH6" Text="Customer List" Style="font-weight:bold" />
     </div>
     <div class="header-buttons">
         <button type="button" class="rz-ripple" @onclick="Add">
@@ -13,7 +13,7 @@
 </div>
 
 <div class="page-body">
-    <RadzenDataGrid @ref="DGrid.grid" Data="@DGrid.DataList.Values" Count="@DGrid.DataList.Count" LoadData="@LoadData" TItem="UserResponseDto" AllowVirtualization="true" Style="height:400px" RowClick="ViewDetails">
+    <RadzenDataGrid @ref="DGrid.grid" Data="@DGrid.DataList.Values" Count="@DGrid.DataList.Count" LoadData="@LoadData" TItem="UserResponseDto" AllowVirtualization="true" Style="height:400px">
         <Columns>
             <RadzenDataGridColumn TItem="UserResponseDto" Property="Email" Title="Email" />
             <RadzenDataGridColumn TItem="UserResponseDto" Property="UserName" Title="UserName" />
@@ -30,7 +30,7 @@
 
 @code {
     DataGrid<UserResponseDto> DGrid = new();
-    
+
     async Task LoadData(LoadDataArgs args)
     {
 
@@ -44,17 +44,17 @@
             OrderBy = "id desc",
         };
 
-        var query = await Bridge.GetJsonAsync<OdataResponse<UserResponseDto>>(ApiRoutes.Identity.GetUsers, requestParams);
+        var query = await Bridge.GetJsonAsync<List<UserResponseDto>>(ApiRoutes.Identity.GetUsers, requestParams);
         if (!query.IsSuccess) return;
 
-        DGrid.DataList = query.Response ?? new();
+        DGrid.DataList = new() { Count = query.Response?.Count ?? 0, Values = query.Response ?? new()};
     }
 
     async Task Add()
     {
         if (DialogService is null) return;
         await DialogService.OpenAsync<CustomerAddEdit>(
-            "Add New Custumer",
+            "Add New Customer",
             new Dictionary<string, object>()
                 {
                 { "Payload", new UserResponseDto()},
@@ -68,7 +68,7 @@
     {
         if (DialogService is null) return;
         await DialogService.OpenAsync<CustomerAddEdit>(
-            "Update Custumer Data",
+            "Update Customer Data",
             new Dictionary<string, object>()
                 {
                 { "Payload", item},
